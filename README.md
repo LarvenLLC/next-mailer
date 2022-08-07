@@ -149,6 +149,34 @@ async function handler(req, res) {
 }
 ```
 
+## Setup - Next Config
+Next logs works by using nodeJS functions inside API routes to write and read logs. This functionality is not enabled for Client Side applications. To enable the Client Side APIs to effectively communicate with the nodeJS functions, please install `process` via npm/yarn/pnpm and add this setup in your `next.config.js`:
+
+```js
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  // ...
+  webpack5: true, // if using webpack 5
+  webpack: (config) => {
+    config.resolve.fallback = {
+      fs: false,
+      path: false,
+      constants: false,
+      process: require.resolve('process/browser'),
+      tls: false,
+      net: false,
+      dns: false,
+      child_process: false,
+    };
+
+    return config;
+  },
+  // ...
+}
+
+module.exports = nextConfig;
+```
+
 ## NextJS Middleware
 While using nextJS middleware in API routes, make sure that your middleware does not block requests at `/api/mailer/` routes. This may lead to errors and malfunctioning while using `next-mailer`.
 
