@@ -3,7 +3,14 @@ import { getDeliveryStatus } from './helper'
 const nodemailer = require('nodemailer')
 
 // TODO: default settings
-// const defaultSettings = {}
+const defaultSettings = {
+  logger: {
+    debug: () => null,
+    error: () => null,
+    info: () => null,
+    warn: () => null
+  }
+}
 
 /**
  *
@@ -11,16 +18,10 @@ const nodemailer = require('nodemailer')
  * @param {Logger} options.logger
  * @returns
  */
-export default function NextMailer({
-  logger = {
-    debug: () => null,
-    error: () => null,
-    info: () => null,
-    warn: () => null
-  },
-  ...options
-}) {
+export default function NextMailer(settings = defaultSettings) {
   // transporter is a way to send your emails
+
+  const { logger, ...options } = settings
 
   // TODO: setup dynamic MAIL_CONFIG
   const MAIL_CONFIG = new Config(options)
