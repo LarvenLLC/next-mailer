@@ -16,7 +16,18 @@ Or
 yarn add next-mailer
 ```
 
-## Usage - Logging
+## Usage - Mailing
+
+### Configure env Variables
+- Using one of known providers eg. gmail. See full list [here](https://nodemailer.com/smtp/well-known/)
+
+```env
+MAILER_USER=
+MAILER_PASSWORD=
+MAILER_SERVICE=
+MAILER_HOST=
+MAILER_PORT=
+```
 
 ### 1. Add API in `/pages/api/mailer/[mail].js`
 ```jsx
