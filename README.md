@@ -88,13 +88,13 @@ import mail from "next-mailer";
 export default Page() {
   useEffect(() => {
     mail({
-      receivers = 'bossbele@larven.io, mkoela@larven.io',
+      receivers: 'bossbele@larven.io, mkoela@larven.io',
       sender: "Larven LLC",
       subject: 'Meeting',
       text: "Let's meet up at 10:00"
     });
     mail({
-      receivers = 'bossbele@larven.io, mkoela@larven.io',
+      receivers: 'bossbele@larven.io, mkoela@larven.io',
       sender: "Larven LLC",
       subject: 'Meeting',
       html: "<b>Let's meet up at 10:00</b>"
@@ -131,7 +131,7 @@ async function handler(req, res) {
       case 'DELETE':
         // delete user
         mailer({
-          receivers = 'user@larven.io',
+          receivers: 'user@larven.io',
           sender: "Noreply Larven",
           subject: 'Account Deletion',
           text: "Your account was deleted successfully"
