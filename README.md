@@ -18,9 +18,9 @@ yarn add next-mailer
 
 ## Usage - Logging
 
-### 1. Add API in `/pages/api/logger/[log].js`
+### 1. Add API in `/pages/api/mailer/[mail].js`
 ```jsx
-// /pages/api/logger/[log].js
+// /pages/api/mailer/[mail].js
 import {NextMailer} from "next-mailer";
 
 export default NextMailer();
@@ -69,7 +69,7 @@ export default mailer;
 
 ```jsx
 // /pages/api/auth.js || /middleware.js
-import {logger} from "../../helper/mailer"; // import from your helper file
+import {mailer} from "../../helper/mailer"; // import from your helper file
 
 async function handler(req, res) {
   const { method } = req;
