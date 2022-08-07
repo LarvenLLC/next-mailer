@@ -1,30 +1,19 @@
-export default class Config {
-  constructor(settings = {}) {
-    const { dir = '' } = settings
-
-    this.dir = dir
-    this.logFiles = {
-      console: `${dir}/console.log`,
-      info: `${dir}/info.log`,
-      debug: `${dir}/debug.log`,
-      warn: `${dir}/warn.log`,
-      error: `${dir}/error.log`
-    }
+export default function Config(options = {}) {
+  if (process?.env?.MAILER_USER || process?.env?.MAILER_PASSWORD) {
+    throw new Error('Auth Not Set')
   }
 
-  setDir(dir) {
-    this.dir = dir
-    this.updateLogFiles()
+  const MAIL_CONFIG = {
+    auth: { user: process.env.MAILER_USER, pass: process.env.MAILER_PASSWORD },
+    ...options
   }
 
-  updateLogFiles() {
-    const dir = this.dir
-    this.logFiles = {
-      console: `${dir}/console.log`,
-      info: `${dir}/info.log`,
-      debug: `${dir}/debug.log`,
-      warn: `${dir}/warn.log`,
-      error: `${dir}/error.log`
-    }
+  if (!process?.env?.MAILER_SERVICE) {
+    MAIL_CONFIG.host = process.env.MAILER_HOST
+    MAIL_CONFIG.port = process.env.MAILER_PORT
+  } else {
+    MAIL_CONFIG.service = process.env.MAILER_SERVICE
   }
+
+  return MAIL_CONFIG
 }
