@@ -1,5 +1,5 @@
 export default function Config(options = {}) {
-  if (process?.env?.MAILER_USER || process?.env?.MAILER_PASSWORD) {
+  if (!process?.env?.MAILER_USER || !process?.env?.MAILER_PASSWORD) {
     throw new Error('Auth Not Set')
   }
 
