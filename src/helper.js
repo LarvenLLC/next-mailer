@@ -1,9 +1,22 @@
 /**
+ * default settings
+ */
+const defaultSettings = {
+  logger: {
+    debug: () => null,
+    error: () => null,
+    info: () => null,
+    warn: () => null
+  }
+}
+export { defaultSettings }
+
+/**
  * @function getDeliveryStatus
  * this is callback function to return status to console
  * @param {Error | null} error
  * @param {SMTPTransport.SentMessageInfo} info
- * @param {*} logger
+ * @param {Logger} logger
  */
 export function getDeliveryStatus(error, info, logger) {
   if (error) {
