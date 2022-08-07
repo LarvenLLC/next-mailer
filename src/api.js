@@ -1,70 +1,89 @@
 import Config from './Config'
-import Logger from './Logger'
-import Reader from './Reader'
+import { getDeliveryStatus } from './helper'
+const nodemailer = require('nodemailer')
 
-const defaultSettings = {
-  dir: '/tmp'
-}
+// TODO: default settings
+// const defaultSettings = {}
 
-function NextLogs(settings = defaultSettings) {
-  const { dir } = settings
+/**
+ *
+ * @param {object} options
+ * @param {Logger} options.logger
+ * @returns
+ */
+export default function NextMailer({
+  logger = {
+    debug: () => null,
+    error: () => null,
+    info: () => null,
+    warn: () => null
+  },
+  ...options
+}) {
+  // transporter is a way to send your emails
 
-  const config = new Config()
-  config.setDir(dir)
+  // TODO: setup dynamic MAIL_CONFIG
+  const MAIL_CONFIG = new Config(options)
+  const transporter = nodemailer.createTransport(MAIL_CONFIG)
 
-  const logger = new Logger(config.dir, config.logFiles)
-  const reader = new Reader(config.dir, config.logFiles)
   return async function handler(req, res) {
     const {
       method,
-      body: { message = '', attributes = {} },
-      query: { log = 'info' }
+      body: {
+        data = {},
+        html,
+        receivers = '',
+        sender = process?.env?.MAILER_FNAME_LNAME,
+        subject = 'Subject',
+        text
+      }
     } = req
 
     try {
       switch (method) {
-        case 'GET': {
-          // get logs
-          // This line opens the file as a readable stream
-          const readStream = reader.read(log)
+        // TODO: retreive sent mail metadata
+        case 'POST': {
+          // send mail
+          // TODO: mail preview text
+          // setup email data with unicode symbols
+          // this is how your email are going to look like
+          const mailOptions = {
+            from: `"${sender}" <${MAIL_CONFIG.auth.user}>`, // sender address
+            to: `${receivers}`, // list of receivers
+            subject, // Subject line
+            text, // text body
+            html // html body
+          }
 
-          // This will wait until we know the readable stream is actually valid before piping
-          readStream.on('open', function () {
-            // This just pipes the read stream to the response object (which goes to the client)
-            readStream.pipe(res)
-          })
+          if (!sender) {
+            throw new Error('Sender not set')
+          }
 
-          // This catches any errors that happen while creating the readable stream (usually invalid names)
-          readStream.on('error', function (err) {
-            res.end(err)
-          })
-          return
-        }
-        case 'POST':
-          // log
-          logger.log(message, attributes, log)
+          if (Object.prototype.hasOwnProperty.call(data, 'file')) {
+            mailOptions.attachments = [
+              {
+                filename: `${data.filePath[0]}`,
+                path: `${data.file[0]}`
+              }
+            ]
+          }
+
+          // call of this function send an email, and return status
+          transporter.sendMail(mailOptions, (error, info) =>
+            getDeliveryStatus(error, info, logger)
+          )
           break
+        }
         default:
-          res.setHeader('Allow', ['GET', 'POST'])
+          res.setHeader('Allow', ['POST'])
           res.status(405).end(`Method ${method} Not Allowed`)
       }
       // send result
-      return res.status(200).json({ message: 'Success' })
+      logger.info('NextMailer - HTTP Status OK')
+      return res.status(200).json({ message: 'Message sent' })
     } catch (error) {
+      logger.error('NextMailer - Internal Server Error', error)
       return res.status(500).json(error)
     }
   }
 }
-
-function loggerAPI(dir = defaultSettings.dir) {
-  const config = new Config()
-  config.setDir(dir)
-
-  const logger = new Logger(config.dir, config.logFiles)
-
-  return logger.logger
-}
-
-export default NextLogs
-
-export { loggerAPI }
