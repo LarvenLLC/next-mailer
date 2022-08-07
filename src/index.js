@@ -1,6 +1,7 @@
-import NextLogs, { loggerAPI } from './api'
-import log from './client'
+import NextMailer from './api'
+import mail from './client'
+import MailerAPI from './server'
 
-module.exports = log
-module.exports.Logger = loggerAPI
-module.exports.NextLogs = NextLogs
+module.exports = mail
+module.exports.NextLogs = NextMailer
+module.exports.Mailer = MailerAPI
