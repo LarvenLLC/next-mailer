@@ -3,5 +3,5 @@ import mail from './client'
 import MailerAPI from './server'
 
 module.exports = mail
-module.exports.NextLogs = NextMailer
+module.exports.NextMailer = NextMailer
 module.exports.Mailer = MailerAPI
