@@ -38,11 +38,11 @@ MAILER_PORT=587
 
 ** Other smtp mailer options can be passed while initializing NextMailer. See below.
 
-### 1. Add API in `/pages/api/mailer/[mail].js`
+### 1. Add API in `/pages/api/mailer/index.js`
 - Default initialization. Eg when using a known provider.
 
 ```jsx
-// /pages/api/mailer/[mail].js
+// /pages/api/mailer/index.js
 import {NextMailer} from "next-mailer";
 
 export default NextMailer();
@@ -51,7 +51,7 @@ export default NextMailer();
 - Initialization with extra options
 
 ```jsx
-// /pages/api/mailer/[mail].js
+// /pages/api/mailer/index.js
 import {NextMailer} from "next-mailer";
 
 export default NextMailer({
@@ -65,7 +65,7 @@ export default NextMailer({
 - Using custom logger
 
 ```jsx
-// /pages/api/mailer/[mail].js
+// /pages/api/mailer/index.js
 import {NextMailer} from "next-mailer";
 
 import log from "next-logs";
