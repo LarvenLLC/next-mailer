@@ -19,22 +19,63 @@ yarn add next-mailer
 ## Usage - Mailing
 
 ### Configure env Variables
-- Using one of known providers eg. gmail. See full list [here](https://nodemailer.com/smtp/well-known/)
+- Using one of known providers eg. gmail. See full list [here](https://nodemailer.com/smtp/well-known/).
 
 ```env
-MAILER_USER=
-MAILER_PASSWORD=
-MAILER_SERVICE=
-MAILER_HOST=
-MAILER_PORT=
+MAILER_USER=account.email@example.com
+MAILER_PASSWORD=smtp-password
+MAILER_SERVICE=SendPulse
 ```
 
+- Using custom provider.
+
+```env
+MAILER_USER=account.email@example.com
+MAILER_PASSWORD=smtp-password
+MAILER_HOST=smtp.hostname.com
+MAILER_PORT=587
+```
+
+** Other smtp mailer options can be passed while initializing NextMailer. See below.
+
 ### 1. Add API in `/pages/api/mailer/[mail].js`
+- Default initialization. Eg when using a known provider.
+
 ```jsx
 // /pages/api/mailer/[mail].js
 import {NextMailer} from "next-mailer";
 
 export default NextMailer();
+```
+
+- Initialization with extra options
+
+```jsx
+// /pages/api/mailer/[mail].js
+import {NextMailer} from "next-mailer";
+
+export default NextMailer({
+  secureConnection: false,
+  tls: {
+      ciphers: 'SSLv3'
+  }
+});
+```
+
+- Using custom logger
+
+```jsx
+// /pages/api/mailer/[mail].js
+import {NextMailer} from "next-mailer";
+
+import log from "next-logs";
+
+export default NextMailer({
+  logger: {
+    info: (message, object) => log.info(message, object)
+    error: (message, object) => log.info(message, object)
+  },
+});
 ```
 
 ### 2. Client Side
