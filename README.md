@@ -43,7 +43,7 @@ MAILER_PORT=587
 
 ```jsx
 // /pages/api/mailer/index.js
-import {NextMailer} from "next-mailer";
+import NextMailer from "next-mailer";
 
 export default NextMailer();
 ```
@@ -83,7 +83,7 @@ The client side API uses API routes hence it works in both: client and server si
 
 ```jsx
 // /pages/*.js
-import mail from "next-mailer";
+import mail from "next-mailer/react";
 
 export default Page() {
   useEffect(() => {
