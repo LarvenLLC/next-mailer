@@ -32,8 +32,8 @@
     "node": ">=10"
   },
   "exports": {
-    "./src": "./dist/index.js",
-    "./src/react": "./react/index.js"
+    ".": "./index.js",
+    "./react": "./react/index.js"
   },
   "scripts": {
     "build": "yarn build:client && yarn build:server",
