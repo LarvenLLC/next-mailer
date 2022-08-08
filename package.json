@@ -28,12 +28,17 @@
   ],
   "main": "dist/index.js",
   "module": "dist/index.modern.js",
-  "source": "src/index.js",
   "engines": {
     "node": ">=10"
   },
+  "exports": {
+    "./src": "./dist/index.js",
+    "./src/react": "./react/index.js"
+  },
   "scripts": {
-    "build": "microbundle-crl --no-compress --format modern,cjs",
+    "build": "yarn build:client && yarn build:server",
+    "build:client": "microbundle-crl src/react/index.js -o react/index.js --no-compress --format modern,cjs",
+    "build:server": "microbundle-crl --no-compress --format modern,cjs",
     "start": "microbundle-crl watch --no-compress --format modern,cjs",
     "prepare": "run-s build",
     "test": "run-s test:unit test:lint test:build",
@@ -70,6 +75,7 @@
     "react-scripts": "^3.4.1"
   },
   "files": [
-    "dist"
+    "dist",
+    "react"
   ]
 }
