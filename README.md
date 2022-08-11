@@ -52,7 +52,7 @@ export default NextMailer();
 
 ```jsx
 // /pages/api/mailer/index.js
-import {NextMailer} from "next-mailer";
+import NextMailer from "next-mailer";
 
 export default NextMailer({
   secureConnection: false,
@@ -66,7 +66,7 @@ export default NextMailer({
 
 ```jsx
 // /pages/api/mailer/index.js
-import {NextMailer} from "next-mailer";
+import NextMailer from "next-mailer";
 
 import log from "next-logs";
 
