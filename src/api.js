@@ -21,7 +21,7 @@ export default function NextMailer(settings = defaultSettings) {
     const {
       method,
       body: {
-        data = {},
+        attachments,
         html,
         receivers = '',
         sender = process?.env?.MAILER_FNAME_LNAME,
@@ -50,13 +50,8 @@ export default function NextMailer(settings = defaultSettings) {
             throw new Error('Sender not set')
           }
 
-          if (Object.prototype.hasOwnProperty.call(data, 'file')) {
-            mailOptions.attachments = [
-              {
-                filename: `${data.filePath[0]}`,
-                path: `${data.file[0]}`
-              }
-            ]
+          if (Array.isArray(attachments)) {
+            mailOptions.attachments = attachments
           }
 
           // call of this function send an email, and return status
