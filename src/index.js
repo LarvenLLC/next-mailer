@@ -1,5 +1,6 @@
-import NextMailer from './api'
-import MailerAPI from './server'
+import NextMailer, { getTransporter } from './api'
+import mailer from './server'
 
 module.exports = NextMailer
-module.exports.Mailer = MailerAPI
+module.exports.getTransporter = getTransporter
+module.exports.mailer = mailer
