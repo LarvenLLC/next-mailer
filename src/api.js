@@ -12,6 +12,7 @@ const nodemailer = require('nodemailer')
 const NextMailer = (settings = defaultSettings) => {
   // transporter is a way to send your emails
 
+  // const CONFIG = { ...defaultSettings, ...settings }
   const { logger = defaultSettings.logger, ...options } = settings
 
   // TODO: setup dynamic MAIL_CONFIG
@@ -53,7 +54,8 @@ const NextMailer = (settings = defaultSettings) => {
   }
 
   // Attach getConfig and getTransporter methods to handler
-  // handler.getConfig = () => MAIL_CONFIG
+  handler.getConfig = () => MAIL_CONFIG
+  handler.getLogger = () => logger
   handler.getTransporter = () => transporter
 
   // Return the handler function, now with attached methods
@@ -61,5 +63,7 @@ const NextMailer = (settings = defaultSettings) => {
 }
 
 export default NextMailer
+const getConfig = NextMailer.getConfig
+const getLogger = NextMailer.getLogger
 const getTransporter = NextMailer.getTransporter
-export { getTransporter }
+export { getConfig, getLogger, getTransporter }
