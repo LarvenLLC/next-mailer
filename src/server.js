@@ -3,55 +3,51 @@ import { defaultSettings, getDeliveryStatus } from './helper'
 const nodemailer = require('nodemailer')
 
 /**
- *
- * @param {object} config
- * @param {Logger} config.logger
- * @returns
+ * Server-side mailing API
+ * @function mailer
+ * @param {MailBody} config
+ * @returns {Promise<any>}
  */
-export default function MailerAPI(settings = defaultSettings) {
-  const { logger: LOGGER = defaultSettings.logger, ...options } = settings
+export default async function mailer({
+  attachments,
+  html,
+  receivers = '',
+  sender = process?.env?.MAILER_FNAME_LNAME,
+  subject = 'Subject',
+  text,
+  settings
+}) {
+  const { logger = defaultSettings.logger, ...options } = settings
 
-  const CONFIG = new Config(options)
-  const TRANSPORTER = nodemailer.createTransport(CONFIG)
+  const MAIL_CONFIG = new Config(options)
+  const transporter = nodemailer.createTransport(MAIL_CONFIG)
 
-  // Server-side mailing API
-  /**
-   * @function mail
-   * @param {MailBody} config
-   * @returns {Promise<any>}
-   */
-  return async function mailer(
-    { data, html, receivers, sender, subject, text },
-    MAIL_CONFIG = CONFIG,
-    logger = LOGGER,
-    transporter = TRANSPORTER
-  ) {
-    try {
-      const mailOptions = {
-        from: `"${sender}" <${MAIL_CONFIG.auth.user}>`, // sender address
-        to: `${receivers}`, // list of receivers
-        subject, // Subject line
-        text, // text body
-        html // html body
-      }
+  try {
+    // send mail
+    // TODO: mail preview text
+    // setup email data with unicode symbols
+    // this is how your email are going to look like
+    const mailOptions = {
+      from: `"${sender}" <${MAIL_CONFIG.auth.user}>`, // sender address
+      to: `${receivers}`, // list of receivers
+      subject, // Subject line
+      text, // text body
+      html // html body
+    }
 
-      if (!sender) {
-        throw new Error('Sender not set')
-      }
+    if (!sender) {
+      throw new Error('Sender not set')
+    }
 
-      if (Object.prototype.hasOwnProperty.call(data, 'file')) {
-        mailOptions.attachments = [
-          {
-            filename: `${data.filePath[0]}`,
-            path: `${data.file[0]}`
-          }
-        ]
-      }
+    if (Array.isArray(attachments)) {
+      mailOptions.attachments = attachments
+    }
 
-      // call of this function send an email, and return status
-      transporter.sendMail(mailOptions, (error, info) =>
-        getDeliveryStatus(error, info, logger)
-      )
-    } catch (error) {}
+    // call of this function send an email, and return status
+    transporter.sendMail(mailOptions, (error, info) =>
+      getDeliveryStatus(error, info, logger)
+    )
+  } catch (error) {
+    logger.error('NextMailer - Error', error)
   }
 }
