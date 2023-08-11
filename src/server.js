@@ -1,6 +1,5 @@
-import Config from './Config'
-import { defaultSettings, getDeliveryStatus } from './helper'
-const nodemailer = require('nodemailer')
+import { getConfig, getLogger, getTransporter } from './api'
+import { getDeliveryStatus } from './helper'
 
 /**
  * Server-side mailing API
@@ -14,13 +13,12 @@ export default async function mailer({
   receivers = '',
   sender = process?.env?.MAILER_FNAME_LNAME,
   subject = 'Subject',
-  text,
-  settings
+  text
 }) {
-  const { logger = defaultSettings.logger, ...options } = settings
+  const MAIL_CONFIG = getConfig()
+  const logger = getLogger()
 
-  const MAIL_CONFIG = new Config(options)
-  const transporter = nodemailer.createTransport(MAIL_CONFIG)
+  const transporter = getTransporter()
 
   try {
     // send mail
