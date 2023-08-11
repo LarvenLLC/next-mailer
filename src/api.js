@@ -1,5 +1,6 @@
 import Config from './Config'
-import { defaultSettings, getDeliveryStatus } from './helper'
+import { defaultSettings } from './helper'
+import mailer from './server'
 const nodemailer = require('nodemailer')
 
 /**
@@ -8,7 +9,7 @@ const nodemailer = require('nodemailer')
  * @param {Logger} settings.logger
  * @returns
  */
-export default function NextMailer(settings = defaultSettings) {
+const NextMailer = (settings = defaultSettings) => {
   // transporter is a way to send your emails
 
   const { logger = defaultSettings.logger, ...options } = settings
@@ -17,47 +18,25 @@ export default function NextMailer(settings = defaultSettings) {
   const MAIL_CONFIG = new Config(options)
   const transporter = nodemailer.createTransport(MAIL_CONFIG)
 
-  return async function handler(req, res) {
+  const handler = async function handler(req, res) {
     const {
       method,
-      body: {
-        attachments,
-        html,
-        receivers = '',
-        sender = process?.env?.MAILER_FNAME_LNAME,
-        subject = 'Subject',
-        text
-      }
+      body: { attachments, html, receivers, sender, subject, text }
     } = req
 
     try {
       switch (method) {
         // TODO: retreive sent mail metadata
         case 'POST': {
-          // send mail
-          // TODO: mail preview text
-          // setup email data with unicode symbols
-          // this is how your email are going to look like
-          const mailOptions = {
-            from: `"${sender}" <${MAIL_CONFIG.auth.user}>`, // sender address
-            to: `${receivers}`, // list of receivers
-            subject, // Subject line
-            text, // text body
-            html // html body
-          }
-
-          if (!sender) {
-            throw new Error('Sender not set')
-          }
-
-          if (Array.isArray(attachments)) {
-            mailOptions.attachments = attachments
-          }
-
-          // call of this function send an email, and return status
-          transporter.sendMail(mailOptions, (error, info) =>
-            getDeliveryStatus(error, info, logger)
-          )
+          await mailer({
+            attachments,
+            html,
+            receivers,
+            sender,
+            subject,
+            text,
+            settings
+          })
           break
         }
         default:
@@ -72,4 +51,15 @@ export default function NextMailer(settings = defaultSettings) {
       return res.status(500).json(error)
     }
   }
+
+  // Attach getConfig and getTransporter methods to handler
+  // handler.getConfig = () => MAIL_CONFIG
+  handler.getTransporter = () => transporter
+
+  // Return the handler function, now with attached methods
+  return handler
 }
+
+export default NextMailer
+const getTransporter = NextMailer.getTransporter
+export { getTransporter }
