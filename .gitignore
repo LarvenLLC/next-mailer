@@ -4,6 +4,9 @@
 # dependencies
 node_modules
 
+# examples
+example
+
 # builds
 build
 dist
