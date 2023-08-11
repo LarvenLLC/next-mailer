@@ -1,5 +1,9 @@
-import { getConfig, getLogger, getTransporter } from './api'
-import { getDeliveryStatus } from './helper'
+import Config from './Config'
+import { defaultSettings, getDeliveryStatus } from './helper'
+import mail from './react/client'
+const nodemailer = require('nodemailer')
+
+let configurations = null
 
 /**
  * Server-side mailing API
@@ -7,7 +11,7 @@ import { getDeliveryStatus } from './helper'
  * @param {MailBody} config
  * @returns {Promise<any>}
  */
-export default async function mailer({
+export async function mailer({
   attachments,
   html,
   receivers = '',
@@ -15,13 +19,21 @@ export default async function mailer({
   subject = 'Subject',
   text
 }) {
-  const MAIL_CONFIG = getConfig()
-  const logger = getLogger()
+  if (!configurations) {
+    return await mail({
+      attachments,
+      html,
+      receivers,
+      sender,
+      subject,
+      text
+    })
+  }
 
-  const transporter = getTransporter()
-
+  const { logger = defaultSettings.logger, ...options } = configurations
+  const MAIL_CONFIG = new Config(options)
+  const transporter = nodemailer.createTransport(MAIL_CONFIG)
   try {
-    // send mail
     // TODO: mail preview text
     // setup email data with unicode symbols
     // this is how your email are going to look like
@@ -49,3 +61,59 @@ export default async function mailer({
     logger.error('NextMailer - Error', error)
   }
 }
+
+/**
+ *
+ * @param {object} settings
+ * @param {Logger} settings.logger
+ * @returns
+ */
+const NextMailer = (settings = defaultSettings) => {
+  // transporter is a way to send your emails
+
+  // const CONFIG = { ...defaultSettings, ...settings }
+  configurations = settings
+  const { logger = defaultSettings.logger } = settings
+
+  const handler = async function handler(req, res) {
+    const {
+      method,
+      body: { attachments, html, receivers, sender, subject, text }
+    } = req
+
+    try {
+      switch (method) {
+        // TODO: retreive sent mail metadata
+        case 'POST': {
+          await mailer({
+            attachments,
+            html,
+            receivers,
+            sender,
+            subject,
+            text,
+            settings
+          })
+          break
+        }
+        default:
+          res.setHeader('Allow', ['POST'])
+          res.status(405).end(`Method ${method} Not Allowed`)
+      }
+      // send result
+      logger.info('NextMailer - HTTP Status OK')
+      return res.status(200).json({ message: 'Message sent' })
+    } catch (error) {
+      logger.error('NextMailer - Internal Server Error', error)
+      return res.status(500).json(error)
+    }
+  }
+
+  // Attach getLogger methods to handler
+  handler.getLogger = () => logger
+
+  // Return the handler function, now with attached methods
+  return handler
+}
+
+export default NextMailer
