@@ -1,6 +1,6 @@
 {
   "name": "next-mailer",
-  "version": "1.3.0",
+  "version": "1.3.0.1",
   "description": "Intelligent, minimal, server and client side mailer for NextJS, NodeJS and JS Applications and Servers.",
   "author": "BossBele",
   "license": "MIT",
