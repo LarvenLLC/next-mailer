@@ -19,6 +19,16 @@ yarn add next-mailer
 ## Usage - Mailing
 
 ### Configure env Variables
+`MAILER_BASE_URL` env variable is mandatory. It represents the url at which the project runs.
+Some examples could be:
+```env
+MAILER_BASE_URL=http://localhost:3000
+```
+Or
+```env
+MAILER_BASE_URL=https://my-nextjs-website.com
+```
+
 - Using one of known providers eg. gmail. See full list [here](https://nodemailer.com/smtp/well-known/).
 
 ```env
@@ -34,6 +44,11 @@ MAILER_USER=account.email@example.com
 MAILER_PASSWORD=smtp-password
 MAILER_HOST=smtp.hostname.com
 MAILER_PORT=587
+```
+
+Other optional env variables:
+```env
+MAILER_SENDER=Adam Beleko
 ```
 
 ** Other smtp mailer options can be passed while initializing NextMailer. See below.
@@ -111,17 +126,8 @@ export default Page() {
 Next mailer ships with a server side API that makes mailing more efficient.
 
 ```jsx
-// in your helper function eg. /helper/mailer
-import {Mailer} from "next-mailer";
-
-const mailer = Mailer();
-
-export default mailer;
-```
-
-```jsx
 // /pages/api/auth.js || /middleware.js
-import {mailer} from "../../helper/mailer"; // import from your helper file
+import { mailer } from "next-mailer";
 
 async function handler(req, res) {
   const { method } = req;

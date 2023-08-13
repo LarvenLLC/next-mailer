@@ -15,7 +15,7 @@ export async function mailer({
   attachments,
   html,
   receivers = '',
-  sender = process?.env?.MAILER_FNAME_LNAME,
+  sender = process?.env?.MAILER_SENDER,
   subject = 'Subject',
   text
 }) {
